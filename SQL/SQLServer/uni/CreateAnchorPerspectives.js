@@ -309,9 +309,7 @@ CREATE FUNCTION [$anchor.capsule].[i$anchor.name] (
 )
 RETURNS TABLE AS RETURN
 SELECT
-    timepoints.inspectedTimepoint,
-    timepoints.mnemonic,
-    [l$anchor.mnemonic].*
+    *
 FROM (
 ~*/
             while (attribute = anchor.nextHistorizedAttribute()) {
@@ -331,10 +329,19 @@ FROM (
             }
 /*~
 ) timepoints
-LEFT JOIN
-    [$anchor.capsule].[l$anchor.name] [l$anchor.mnemonic]
+$(anchor.hasMoreHistorizedAttributes())? LEFT JOIN
+~*/
+            while (attribute = anchor.nextHistorizedAttribute()) {
+/*~
+    $(attribute.isEquivalent())? [$attribute.capsule].[e$attribute.name](0) AS $attribute.mnemonic$_table : [$attribute.capsule].[$attribute.name] AS $attribute.mnemonic$_table
 ON
-    [l$anchor.mnemonic].$anchor.identityColumnName = timepoints.$anchor.identityColumnName;
+    $attribute.mnemonic$_table.$attribute.anchorReferenceName = timepoints.$anchor.identityColumnName
+AND
+    $attribute.mnemonic$_table.$attribute.changingColumnName = timepoints.inspectedTimepoint
+$(anchor.hasMoreHistorizedAttributes())? LEFT JOIN
+~*/
+            }
+/*~
 GO
 ~*/
         }
