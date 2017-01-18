@@ -21,6 +21,8 @@ DROP FUNCTION [$anchor.capsule].[EQ_Latest_$anchor.businessName];
 ~*/
         }
 /*~
+IF Object_ID('$anchor.capsule$.Interval_$anchor.businessName', 'IF') IS NOT NULL
+DROP FUNCTION [$anchor.capsule].[Interval_$anchor.businessName];
 IF Object_ID('$anchor.capsule$.Difference_$anchor.businessName', 'IF') IS NOT NULL
 DROP FUNCTION [$anchor.capsule].[Difference_$anchor.businessName];
 IF Object_ID('$anchor.capsule$.Current_$anchor.businessName', 'V') IS NOT NULL
