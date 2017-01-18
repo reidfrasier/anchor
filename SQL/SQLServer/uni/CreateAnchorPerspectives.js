@@ -33,8 +33,6 @@ while (anchor = schema.nextAnchor()) {
 ~*/
     if(schema.EQUIVALENCE) {
 /*~
-IF Object_ID('$anchor.capsule$.ei$anchor.name', 'IF') IS NOT NULL
-DROP FUNCTION [$anchor.capsule].[ei$anchor.name];
 IF Object_ID('$anchor.capsule$.ed$anchor.name', 'IF') IS NOT NULL
 DROP FUNCTION [$anchor.capsule].[ed$anchor.name];
 IF Object_ID('$anchor.capsule$.en$anchor.name', 'IF') IS NOT NULL
