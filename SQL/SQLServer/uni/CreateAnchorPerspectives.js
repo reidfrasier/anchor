@@ -295,6 +295,47 @@ WHERE
 GO
 ~*/
         }
+        if(anchor.hasMoreHistorizedAttributes()) {
+/*~
+-- Interval perspective ---------------------------------------------------------------------------------------------
+-- i$anchor.name showing all values in the given interval and optionally for a subset of attributes
+-----------------------------------------------------------------------------------------------------------------------
+CREATE FUNCTION [$anchor.capsule].[i$anchor.name] (
+    @intervalStart $schema.metadata.chronon,
+    @intervalEnd $schema.metadata.chronon,
+    @selection varchar(max) = null
+)
+RETURNS TABLE AS RETURN
+SELECT
+    timepoints.inspectedTimepoint,
+    timepoints.mnemonic,
+    [l$anchor.mnemonic].*
+FROM (
+~*/
+            while (attribute = anchor.nextHistorizedAttribute()) {
+/*~
+    SELECT
+        $attribute.anchorReferenceName AS $anchor.identityColumnName,
+        $attribute.changingColumnName AS inspectedTimepoint,
+        '$attribute.mnemonic' AS mnemonic
+    FROM
+        $(attribute.isEquivalent())? [$attribute.capsule].[e$attribute.name](0) : [$attribute.capsule].[$attribute.name]
+    WHERE
+        (@selection is null OR @selection like '%$attribute.mnemonic%')
+    AND
+        $attribute.changingColumnName BETWEEN @intervalStart AND @intervalEnd
+    $(anchor.hasMoreHistorizedAttributes())? UNION
+~*/
+            }
+/*~
+) timepoints
+LEFT JOIN
+    [$anchor.capsule].[l$anchor.name] [l$anchor.mnemonic]
+ON
+    [l$anchor.mnemonic].$anchor.identityColumnName = timepoints.$anchor.identityColumnName;
+GO
+~*/
+        }
 // --------------------------------------- DO THE EQUIVALENCE THING ---------------------------------------------------
         if(schema.EQUIVALENCE) {
 /*~
