@@ -136,47 +136,6 @@ WHERE
 GO
 ~*/
         }
-        if(anchor.hasMoreHistorizedAttributes()) {
-/*~
--- Interval perspective ---------------------------------------------------------------------------------------------
--- Difference_$anchor.businessName showing all values in the given interval and optionally for a subset of attributes
------------------------------------------------------------------------------------------------------------------------
-CREATE FUNCTION [$anchor.capsule].[Interval_$anchor.businessName] (
-    @intervalStart $schema.metadata.chronon,
-    @intervalEnd $schema.metadata.chronon,
-    @selection varchar(max) = null
-)
-RETURNS TABLE AS RETURN
-SELECT
-    timepoints.[Time_of_Change],
-    timepoints.[Subject_of_Change],
-    [l$anchor.mnemonic].*
-FROM (
-~*/
-            while (attribute = anchor.nextHistorizedAttribute()) {
-/*~
-    SELECT
-        $attribute.anchorReferenceName AS $anchor.identityColumnName,
-        $attribute.changingColumnName AS [Time_of_Change],
-        '$attribute.businessName' AS [Subject_of_Change]
-    FROM
-        $(attribute.isEquivalent())? [$attribute.capsule].[e$attribute.name](0) : [$attribute.capsule].[$attribute.name]
-    WHERE
-        (@selection is null OR @selection like '%$attribute.mnemonic%')
-    AND
-        $attribute.changingColumnName BETWEEN @intervalStart AND @intervalEnd
-    $(anchor.hasMoreHistorizedAttributes())? UNION
-~*/
-            }
-/*~
-) timepoints
-LEFT JOIN
-    [$anchor.capsule].[Latest_$anchor.businessName] [l$anchor.mnemonic]
-ON
-    [l$anchor.mnemonic].$anchor.businessIdentityColumnName = timepoints.$anchor.identityColumnName;
-GO
-~*/
-        }
 // ------------------------------------------------ EQUIVALENCE -------------------------------------------------------
         if(schema.EQUIVALENCE) {
 /*~

@@ -44,8 +44,6 @@ DROP FUNCTION [$anchor.capsule].[el$anchor.name];
 ~*/
     }
 /*~
-IF Object_ID('$anchor.capsule$.i$anchor.name', 'IF') IS NOT NULL
-DROP FUNCTION [$anchor.capsule].[i$anchor.name];
 IF Object_ID('$anchor.capsule$.d$anchor.name', 'IF') IS NOT NULL
 DROP FUNCTION [$anchor.capsule].[d$anchor.name];
 IF Object_ID('$anchor.capsule$.n$anchor.name', 'V') IS NOT NULL
@@ -245,95 +243,6 @@ ON
         }
 /*~
 GO
--- Timeseries perspective ------------------------------------------------------------------------------------------
--- t$anchor.name viewed as it was on the given timepoint
------------------------------------------------------------------------------------------------------------------------
-CREATE FUNCTION [$anchor.capsule].[t$anchor.name] (
-    @intervalStart $schema.metadata.chronon,
-    @intervalEnd $schema.metadata.chronon,
-    @selection varchar(max) = null
-)
-RETURNS TABLE WITH SCHEMABINDING AS RETURN
-SELECT
-    [$anchor.mnemonic].$anchor.identityColumnName,
-    $(schema.METADATA)? [$anchor.mnemonic].$anchor.metadataColumnName,
-~*/
-        while (attribute = anchor.nextAttribute()) {
-/*~
-    $(schema.IMPROVED)? [$attribute.mnemonic].$attribute.anchorReferenceName,
-    $(schema.METADATA)? [$attribute.mnemonic].$attribute.metadataColumnName,
-    $(attribute.timeRange)? [$attribute.mnemonic].$attribute.changingColumnName,
-    $(attribute.isEquivalent())? [$attribute.mnemonic].$attribute.equivalentColumnName,
-~*/
-            if(attribute.isKnotted()) {
-                knot = attribute.knot;
-/*~
-    $(knot.hasChecksum())? [k$attribute.mnemonic].$knot.checksumColumnName AS $attribute.knotChecksumColumnName,
-    $(knot.isEquivalent())? [k$attribute.mnemonic].$knot.equivalentColumnName AS $attribute.knotEquivalentColumnName,
-    [k$attribute.mnemonic].$knot.valueColumnName AS $attribute.knotValueColumnName,
-    $(schema.METADATA)? [k$attribute.mnemonic].$knot.metadataColumnName AS $attribute.knotMetadataColumnName,
-~*/
-            }
-/*~
-    $(attribute.hasChecksum())? [$attribute.mnemonic].$attribute.checksumColumnName,
-    [$attribute.mnemonic].$attribute.valueColumnName$(anchor.hasMoreAttributes())?,
-~*/
-        }
-/*~
-FROM
-    [$anchor.capsule].[$anchor.name] [$anchor.mnemonic]
-~*/
-        while (attribute = anchor.nextAttribute()) {
-            if(attribute.isEquivalent()) {
-/*~
-LEFT JOIN
-    [$attribute.capsule].[$attribute.name](0) [$attribute.mnemonic]
-~*/
-            }
-            else {
-/*~
-LEFT JOIN
-    [$attribute.capsule].[$attribute.name] [$attribute.mnemonic]
-~*/
-            }
-/*~
-ON
-    [$attribute.mnemonic].$attribute.anchorReferenceName = [$anchor.mnemonic].$anchor.identityColumnName~*/
-            if(attribute.isKnotted()) {
-                knot = attribute.knot;
-                if(knot.isEquivalent()) {
-/*~
-LEFT JOIN
-    [$knot.capsule].[e$knot.name](0) [k$attribute.mnemonic]
-~*/
-                }
-                else {
-/*~
-LEFT JOIN
-    [$knot.capsule].[$knot.name] [k$attribute.mnemonic]
-~*/
-                }
-/*~
-ON
-    [k$attribute.mnemonic].$knot.identityColumnName = [$attribute.mnemonic].$attribute.knotReferenceName
-~*/
-            }
-        }
-/*~
-WHERE
-~*/
-        while (attribute = anchor.nextHistorizedAttribute()) {
-/*~
-    [$attribute.mnemonic].$attribute.changingColumnName BETWEEN @intervalStart AND @intervalEnd
-~*/
-            if (anchor.hasMoreHistorizedAttributes()) {
-/*~
-AND
-~*/
-            }
-        }
-/*~
-GO
 -- Now perspective ----------------------------------------------------------------------------------------------------
 -- n$anchor.name viewed as it currently is (cannot include future versions)
 -----------------------------------------------------------------------------------------------------------------------
@@ -383,62 +292,6 @@ CROSS APPLY
     [$anchor.capsule].[p$anchor.name](timepoints.inspectedTimepoint) [p$anchor.mnemonic]
 WHERE
     [p$anchor.mnemonic].$anchor.identityColumnName = timepoints.$anchor.identityColumnName;
-GO
-~*/
-        }
-        if(anchor.hasMoreHistorizedAttributes()) {
-/*~
--- Interval perspective ---------------------------------------------------------------------------------------------
--- i$anchor.name showing all values in the given interval and optionally for a subset of attributes
------------------------------------------------------------------------------------------------------------------------
-CREATE FUNCTION [$anchor.capsule].[i$anchor.name] (
-    @intervalStart $schema.metadata.chronon,
-    @intervalEnd $schema.metadata.chronon,
-    @selection varchar(max) = null
-)
-RETURNS TABLE AS RETURN
-SELECT
-    timepoints.inspectedTimepoint,
-    timepoints.mnemonic,
-~*/
-            while (attribute = anchor.nextHistorizedAttribute()) {
-/*~
-    $attribute.name$(anchor.hasMoreHistorizedAttributes())? ,
-~*/
-            }
-/*~
-FROM (
-~*/
-            while (attribute = anchor.nextHistorizedAttribute()) {
-/*~
-    SELECT
-        $attribute.anchorReferenceName AS $anchor.identityColumnName,
-        $attribute.changingColumnName AS inspectedTimepoint,
-        '$attribute.mnemonic' AS mnemonic
-    FROM
-        $(attribute.isEquivalent())? [$attribute.capsule].[e$attribute.name](0) : [$attribute.capsule].[$attribute.name]
-    WHERE
-        (@selection is null OR @selection like '%$attribute.mnemonic%')
-    AND
-        $attribute.changingColumnName BETWEEN @intervalStart AND @intervalEnd
-    $(anchor.hasMoreHistorizedAttributes())? UNION
-~*/
-            }
-/*~
-) timepoints
-$(anchor.hasMoreHistorizedAttributes())? LEFT JOIN
-~*/
-            while (attribute = anchor.nextHistorizedAttribute()) {
-/*~
-    $(attribute.isEquivalent())? [$attribute.capsule].[e$attribute.name](0) AS $attribute.mnemonic$_table : [$attribute.capsule].[$attribute.name] AS $attribute.mnemonic$_table
-ON
-    $attribute.mnemonic$_table.$attribute.anchorReferenceName = timepoints.$anchor.identityColumnName
-AND
-    $attribute.mnemonic$_table.$attribute.changingColumnName = timepoints.inspectedTimepoint
-$(anchor.hasMoreHistorizedAttributes())? LEFT JOIN
-~*/
-            }
-/*~
 GO
 ~*/
         }
