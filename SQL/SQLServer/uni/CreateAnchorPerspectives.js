@@ -44,8 +44,6 @@ DROP FUNCTION [$anchor.capsule].[el$anchor.name];
 ~*/
     }
 /*~
-IF Object_ID('$anchor.capsule$.i$anchor.name', 'IF') IS NOT NULL
-DROP FUNCTION [$anchor.capsule].[i$anchor.name];
 IF Object_ID('$anchor.capsule$.d$anchor.name', 'IF') IS NOT NULL
 DROP FUNCTION [$anchor.capsule].[d$anchor.name];
 IF Object_ID('$anchor.capsule$.n$anchor.name', 'V') IS NOT NULL
@@ -296,42 +294,6 @@ WHERE
     [p$anchor.mnemonic].$anchor.identityColumnName = timepoints.$anchor.identityColumnName;
 GO
 ~*/
-        }
-        if(anchor.hasMoreHistorizedAttributes()) {
-/*~
--- Interval perspective ---------------------------------------------------------------------------------------------
--- i$anchor.name showing all values between the given timepoints and for a particular attribute joined with the latest view
------------------------------------------------------------------------------------------------------------------------
-CREATE FUNCTION [$anchor.capsule].[i$anchor.name] (
-    @intervalStart $schema.metadata.chronon,
-    @intervalEnd $schema.metadata.chronon,
-    @selection varchar(max) = null
-)
-RETURNS TABLE AS RETURN
-IF @selection = ~*/
-            while (attribute = anchor.nextHistorizedAttribute()) {
-/*~'$attribute.mnemonic' (
-    SELECT
-        $attribute.anchorReferenceName AS $anchor.identityColumnName,
-        $attribute.changingColumnName AS inspectedTimepoint,
-        $attribute.valueColumnName,
-        '$attribute.mnemonic' AS mnemonic
-    FROM
-        $(attribute.isEquivalent())? [$attribute.capsule].[e$attribute.name](0) : [$attribute.capsule].[i$attribute.name](@intervalStart, @intervalEnd) AS [$attribute.mnemonic]
-    LEFT JOIN
-        [$anchor.capsule].[l$anchor.name] AS [l$anchor.mnemonic]
-    ON
-        [$attribute.mnemonic].[$anchor.identityColumnName] = [l$anchor.mnemonic].[$anchor.identityColumnName]
-    )
-$(anchor.hasMoreHistorizedAttributes())?ELSE IF @selection = ~*/
-            }
-/*~
-ELSE (
-    SELECT NULL
-    );
-GO
-~*/
-        }
 // --------------------------------------- DO THE EQUIVALENCE THING ---------------------------------------------------
         if(schema.EQUIVALENCE) {
 /*~
