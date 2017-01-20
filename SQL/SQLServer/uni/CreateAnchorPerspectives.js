@@ -295,6 +295,47 @@ WHERE
 GO
 ~*/
         }
+        if(anchor.hasMoreHistorizedAttributes()) {
+/*~
+-- Interval perspective ---------------------------------------------------------------------------------------------
+-- i$anchor.name showing all values between the given timepoints and for a particular attribute joined with the latest view
+-----------------------------------------------------------------------------------------------------------------------
+CREATE FUNCTION [$anchor.capsule].[i$anchor.name] (
+    @intervalStart $schema.metadata.chronon,
+    @intervalEnd $schema.metadata.chronon,
+    @selection varchar(max) = null
+)
+RETURNS TABLE AS RETURN
+SELECT
+    timepoints.inspectedTimepoint,
+    timepoints.mnemonic,
+    [p$anchor.mnemonic].*
+FROM (
+~*/
+            while (attribute = anchor.nextHistorizedAttribute()) {
+/*~
+    SELECT DISTINCT
+        $attribute.anchorReferenceName AS $anchor.identityColumnName,
+        $attribute.changingColumnName AS inspectedTimepoint,
+        '$attribute.mnemonic' AS mnemonic
+    FROM
+        $(attribute.isEquivalent())? [$attribute.capsule].[e$attribute.name](0) : [$attribute.capsule].[$attribute.name]
+    WHERE
+        (@selection is null OR @selection like '%$attribute.mnemonic%')
+    AND
+        $attribute.changingColumnName BETWEEN @intervalStart AND @intervalEnd
+    $(anchor.hasMoreHistorizedAttributes())? UNION
+~*/
+            }
+/*~
+) timepoints
+CROSS APPLY
+    [$anchor.capsule].[p$anchor.name](timepoints.inspectedTimepoint) [p$anchor.mnemonic]
+WHERE
+    [p$anchor.mnemonic].$anchor.identityColumnName = timepoints.$anchor.identityColumnName;
+GO
+~*/
+        }
 // --------------------------------------- DO THE EQUIVALENCE THING ---------------------------------------------------
         if(schema.EQUIVALENCE) {
 /*~
