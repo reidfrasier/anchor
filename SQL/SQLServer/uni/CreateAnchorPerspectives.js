@@ -294,6 +294,7 @@ WHERE
     [p$anchor.mnemonic].$anchor.identityColumnName = timepoints.$anchor.identityColumnName;
 GO
 ~*/
+        }
 // --------------------------------------- DO THE EQUIVALENCE THING ---------------------------------------------------
         if(schema.EQUIVALENCE) {
 /*~
