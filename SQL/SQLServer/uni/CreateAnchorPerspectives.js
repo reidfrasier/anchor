@@ -44,6 +44,8 @@ DROP FUNCTION [$anchor.capsule].[el$anchor.name];
 ~*/
     }
 /*~
+IF Object_ID('$anchor.capsule$.i$anchor.name', 'IF') IS NOT NULL
+DROP FUNCTION [$anchor.capsule].[i$anchor.name];
 IF Object_ID('$anchor.capsule$.d$anchor.name', 'IF') IS NOT NULL
 DROP FUNCTION [$anchor.capsule].[d$anchor.name];
 IF Object_ID('$anchor.capsule$.n$anchor.name', 'V') IS NOT NULL
@@ -306,33 +308,28 @@ CREATE FUNCTION [$anchor.capsule].[i$anchor.name] (
     @selection varchar(max) = null
 )
 RETURNS TABLE AS RETURN
-SELECT
-    timepoints.inspectedTimepoint,
-    timepoints.mnemonic,
-    [p$anchor.mnemonic].*
-FROM (
+IF @selection = '$attribute.mnemonic' (
 ~*/
             while (attribute = anchor.nextHistorizedAttribute()) {
 /*~
-    SELECT DISTINCT
+    SELECT
         $attribute.anchorReferenceName AS $anchor.identityColumnName,
         $attribute.changingColumnName AS inspectedTimepoint,
         '$attribute.mnemonic' AS mnemonic
     FROM
-        $(attribute.isEquivalent())? [$attribute.capsule].[e$attribute.name](0) : [$attribute.capsule].[$attribute.name]
-    WHERE
-        (@selection is null OR @selection like '%$attribute.mnemonic%')
-    AND
-        $attribute.changingColumnName BETWEEN @intervalStart AND @intervalEnd
-    $(anchor.hasMoreHistorizedAttributes())? UNION
+        $(attribute.isEquivalent())? [$attribute.capsule].[e$attribute.name](0) : [$attribute.capsule].[i$attribute.name](@intervalStart, @intervalEnd) AS [$attribute.mnemonic]
+    LEFT JOIN
+        [$anchor.capsule].[l$anchor.name] AS [l$anchor.mnemonic]
+    ON
+        [$attribute.mnemonic].[$anchor.identityColumnName] = [l$anchor.mnemonic].[$anchor.identityColumnName]
+    )
+$(anchor.hasMoreHistorizedAttributes())?ELSE IF @selection = '$attribute.mnemonic' (
 ~*/
             }
 /*~
-) timepoints
-CROSS APPLY
-    [$anchor.capsule].[p$anchor.name](timepoints.inspectedTimepoint) [p$anchor.mnemonic]
-WHERE
-    [p$anchor.mnemonic].$anchor.identityColumnName = timepoints.$anchor.identityColumnName;
+ELSE (
+    SELECT NULL
+    );
 GO
 ~*/
         }
