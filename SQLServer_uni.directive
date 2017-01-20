@@ -12,6 +12,7 @@ SQL/SQLServer/uni/CreateAttributeEquivalenceViews.js
 SQL/SQLServer/uni/AddAttributeRestatementConstraints.js
 SQL/SQLServer/uni/CreateKeyGenerators.js
 SQL/SQLServer/uni/CreateAttributeRewinders.js
+SQL/SQLServer/uni/CreateAttributeIntervals.js
 SQL/SQLServer/biz/DropAnchorBusinessPerspectives.js
 SQL/SQLServer/uni/CreateAnchorPerspectives.js
 SQL/SQLServer/biz/CreateAnchorBusinessPerspectives.js
