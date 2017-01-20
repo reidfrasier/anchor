@@ -308,13 +308,13 @@ CREATE FUNCTION [$anchor.capsule].[i$anchor.name] (
     @selection varchar(max) = null
 )
 RETURNS TABLE AS RETURN
-IF @selection = '$attribute.mnemonic' (
-~*/
+IF @selection = ~*/
             while (attribute = anchor.nextHistorizedAttribute()) {
-/*~
+/*~'$attribute.mnemonic' (
     SELECT
         $attribute.anchorReferenceName AS $anchor.identityColumnName,
         $attribute.changingColumnName AS inspectedTimepoint,
+        $attribute.valueColumnName,
         '$attribute.mnemonic' AS mnemonic
     FROM
         $(attribute.isEquivalent())? [$attribute.capsule].[e$attribute.name](0) : [$attribute.capsule].[i$attribute.name](@intervalStart, @intervalEnd) AS [$attribute.mnemonic]
@@ -323,8 +323,7 @@ IF @selection = '$attribute.mnemonic' (
     ON
         [$attribute.mnemonic].[$anchor.identityColumnName] = [l$anchor.mnemonic].[$anchor.identityColumnName]
     )
-$(anchor.hasMoreHistorizedAttributes())?ELSE IF @selection = '$attribute.mnemonic' (
-~*/
+$(anchor.hasMoreHistorizedAttributes())?ELSE IF @selection = ~*/
             }
 /*~
 ELSE (
